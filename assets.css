@@ -1,0 +1,125 @@
+body {
+    font-family: 'Kanit', sans-serif;
+    background-color: #f9f9f9;
+    /* พื้นขาวควันบุหรี่ */
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+header h1 {
+    color: #FF6600;
+    /* สีส้มหลัก 20% ของหน้า */
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    border-bottom: 4px solid #FF6600;
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+section {
+    background: #ffffff;
+    width: 100%;
+    max-width: 500px;
+    padding: 25px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    /* มนๆ ดูวัยรุ่น */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    /* เงาบางๆ */
+}
+
+h2 {
+    color: #FF6600;
+    font-size: 1.2rem;
+    margin-top: 0;
+}
+
+.contact-info p {
+    margin: 10px 0;
+    font-weight: 300;
+}
+
+.contact-info a {
+    color: #FF6600;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.contact-info a:hover {
+    text-decoration: underline;
+}
+
+/* สไตล์ฟอร์ม */
+.contact-form form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+input,
+textarea {
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: 'Kanit', sans-serif;
+    outline: none;
+    transition: 0.3s;
+}
+
+input:focus,
+textarea:focus {
+    border-color: #FF6600;
+    box-shadow: 0 0 5px rgba(255, 102, 0, 0.2);
+}
+
+textarea {
+    height: 100px;
+    resize: none;
+}
+
+/* ปุ่มส่งข้อความแบบส้มๆ เท่ๆ */
+button {
+    background-color: #FF6600;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background-color: #e65c00;
+    transform: translateY(-2px);
+    /* เอฟเฟกต์ลอยขึ้น */
+}
+
+/* ลิงก์กลับหน้าหลัก */
+a[href="index.php"] {
+    margin-top: 10px;
+    color: #888;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: 0.3s;
+}
+
+a[href="index.php"]:hover {
+    color: #333;
+}
