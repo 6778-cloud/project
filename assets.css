@@ -33,7 +33,6 @@ section {
     padding: 25px;
     margin-bottom: 20px;
     border-radius: 15px;
-    /* มนๆ ดูวัยรุ่น */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     /* เงาบางๆ */
 }
@@ -92,7 +91,7 @@ textarea {
     resize: none;
 }
 
-/* ปุ่มส่งข้อความแบบส้มๆ เท่ๆ */
+/* ปุ่มส่งข้อความแบบส้มๆ */
 button {
     background-color: #FF6600;
     color: white;
