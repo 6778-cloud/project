@@ -1,5 +1,14 @@
 <?php
 session_start();
+
+$cart_count = 0;
+
+if (isset($_SESSION['cart'])) {
+    foreach ($_SESSION['cart'] as $qty) {
+        $cart_count += $qty;
+    }
+}
+
 ?>
 
 
@@ -13,58 +22,81 @@ if ($conn->connect_error) {
 }
 
 // สร้างคำสั่ง SQL เพื่อดึงข้อมูลสินค้าทั้งหมดจากตาราง products
-$sql = "SELECT product_name, price, image_url FROM products";
+$sql = "SELECT id,product_name, price, image_url FROM products";
 $result = $conn->query($sql);
 
 ?>
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF8">    
+    <meta charset="UTF-8">    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <title>เสื้อผ้ามือสองสุดเท่</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
         <header> 
-            <h1>เสื้อผ้าขี้ริ้วมือสอง</h1>
-            <a href="index.php"> หน้าหลัก</a>
-            <a href="catalog.php"> หมวดหมู่</a>
-            <a href="cart.php">🛍️ ตะกร้าสินค้า</a>
-            <a href="contact.php">ติดต่อเรา</a>
-        
-            <?php if (isset($_SESSION['user'])): ?>
-            <span>สวัสดี <?php echo htmlspecialchars($_SESSION['user']); ?></span>
-            <a href="logout.php">ออกจากระบบ</a>
-            <?php else: ?>
-            <a href="login.php">เข้าสู่ระบบ</a>
-            <?php endif; ?>
+            <nav class="navbar navbar-expand-lg custom-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="index.php">Thin fabric</a>
+
+    <div class="ml-auto">
+      <a href="index.php" class="nav-btn">หน้าหลัก</a>
+      <a href="catalog.php" class="nav-btn">หมวดหมู่</a>
+      <a href="cart.php" class="nav-btn position-relative">
+    🛍️ ตะกร้า
+    <?php if ($cart_count > 0): ?>
+        <span class="badge badge-danger position-absolute" style="top:-5px; right:-10px;">
+            <?php echo $cart_count; ?>
+        </span>
+    <?php endif; ?>
+</a>
+      <a href="contact.php" class="nav-btn">ติดต่อ</a>
+
+      <?php if (isset($_SESSION['user'])): ?>
+        <span class="text-white mx-2">สวัสดี <?php echo htmlspecialchars($_SESSION['user']); ?></span>
+        <a href="logout.php" class="btn btn-danger btn-sm">ออก</a>
+      <?php else: ?>
+        <a href="login.php" class="btn btn-light btn-sm">Login</a>
+      <?php endif; ?>
+    </div>
+  </div>
+</nav>
         </header>
     
 
-    <div class="container">
+    
         <div class="header">
             <p>เลือกซื้อเสื้อผ้าคุณภาพดี ราคาสบายกระเป๋า</p>
         </div>
         
-        <div class="product-grid">
+        <div class="container mt-4">
+            <div class="row">
             <?php
             // ตรวจสอบว่ามีข้อมูลในฐานข้อมูลหรือไม่
-            if ($result->num_rows > 0) {
-                // วนลูปเพื่อแสดงผลสินค้าแต่ละชิ้น
-                while ($row = $result->fetch_assoc()) {
-                    echo '<div class="product-card">';
-                    echo '<img src="' . htmlspecialchars($row["image_url"]) . '" alt="' . htmlspecialchars($row["product_name"]) . '" class="product-image">';
-                    echo '<h2 class="product-title">' . htmlspecialchars($row["product_name"]) . '</h2>';
-                    echo '<p class="product-price">' . htmlspecialchars($row["price"]) . ' บาท</p>';
-                    echo '</div>';
-                }
-            } else {
-                echo "ไม่พบข้อมูลสินค้า";
-            }
-            
-            // ปิดการเชื่อมต่อเมื่อใช้งานเสร็จ
-            $conn->close();
+            if (!$result) {
+    die("Query failed: " . $conn->error);
+}
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        echo '<div class="col-md-4 mb-4">';
+        echo '<div class="card h-100">';
+        echo '<img src="' . htmlspecialchars($row["image_url"]) . '" class="card-img-top">';
+        echo '<div class="card-body">';
+        echo '<h5 class="card-title">' . htmlspecialchars($row["product_name"]) . '</h5>';
+        echo '<p class="card-text text-danger">' . htmlspecialchars($row["price"]) . ' บาท</p>';
+        echo '<a href="addcart.php?id=' . $row['id'] . '" class="btn btn-primary btn-block">Add to cart</a>';
+        echo '</div>';
+        echo '</div>';
+        echo '</div>';
+    }
+} else {
+    echo "ไม่พบข้อมูลสินค้า";
+}
+
+$conn->close();
             ?>
         </div>
     </div>
@@ -72,6 +104,10 @@ $result = $conn->query($sql);
     <footer>
         <p>© 2025 ร้านขายเสื้อมือสองจากปากี. สงวนลิขสิทธิ์</p>
     </footer>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
 </body>
 </html>
 
@@ -146,53 +182,44 @@ body {
 }
 
 /* Header */
-header {
-    background-color: #fff;
-    padding: 20px 5%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 3px solid #FF6600; /* เส้นใต้สีส้ม */
+/* Navbar เต็มแถบ */
+.custom-navbar {
+    background: linear-gradient(90deg, #ff6600, #ff8533);
+    padding: 15px 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* โลโก้ */
+.navbar-brand {
+    font-family: 'Anton', sans-serif;
+    font-size: 3.8rem;
+    color: #fff !important;
+    letter-spacing: 2px;
+}
+
+/* ปุ่มเมนู */
+.nav-btn {
+    color: #fff;
+    text-decoration: none;
+    margin-left: 15px;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: 0.3s;
+    background: rgba(255,255,255,0.15);
+}
+
+/* hover */
+.nav-btn:hover {
+    background: #fff;
+    color: #ff6600;
+}
+
+/* ทำให้ navbar ลอยติดด้านบน */
+.navbar {
     position: sticky;
     top: 0;
     z-index: 1000;
-}
-
-header h1 {
-    font-family: 'Anton', sans-serif;
-    color: #FF6600; /* ส้มเด่นๆ */
-    text-transform: uppercase;
-    font-size: 2.2rem;
-}
-
-header div a {
-    color: #333;
-    text-decoration: none;
-    margin-left: 15px;
-    font-weight: 600;
-    padding: 8px 16px;
-    border-radius: 50px;
-    transition: 0.3s;
-}
-
-header a:hover {
-    color: #FF6600;
-}
-header a[href="index.php"] {
-    background-color: #FF6600;
-    color: #fff;
-}
-header a[href="catalog.php"] {
-    background-color: #FF6600;
-    color: #fff;
-}
-header a[href="contact.php"] {
-    background-color: #FF6600;
-    color: #fff;
-}
-header a[href="cart.php"] {
-    background-color: #FF6600;
-    color: #fff;
 }
 
 /* Container */
@@ -217,12 +244,7 @@ header a[href="cart.php"] {
 }
 
 /* Product Grid */
-.product-grid {
-    display: grid;
-    /* เปลี่ยนจาก auto-fill เป็นการระบุเลข 4 ไปเลย */
-    grid-template-columns: repeat(4, 1fr); 
-    gap: 20px; /* ลดช่องว่างลงนิดนึงเพื่อให้วาง 4 ชิ้นได้สวยๆ */
-    width: 100%;
+
 }
 
 /* แถม: ทำให้รองรับมือถือด้วย (ถ้าเปิดในมือถือจะเหลือ 1 หรือ 2 คอลัมน์เพื่อให้ไม่เบียดกันเกินไป) */
@@ -239,13 +261,7 @@ header a[href="cart.php"] {
 }
 
 /* Product Card */
-.product-card {
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 0; /* เปลี่ยนเป็นเหลี่ยมเพื่อให้ดูแนวสตรีท */
-    padding: 15px;
-    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative;
+
 }
 
 .product-card:hover {
